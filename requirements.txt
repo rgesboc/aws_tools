@@ -1,0 +1,9 @@
+# AWS SDK for Python
+boto3==1.26.0
+
+# For unit testing
+pytest==7.3.0
+
+# For type checking and linting (optional)
+mypy==1.4.1
+flake8==6.1.0
