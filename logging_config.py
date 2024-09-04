@@ -76,3 +76,25 @@ def setup_test_logger(LOG_DIR = 'test_logs', LOG_FILE = 'test_app.log', ERROR_LO
     logger.addHandler(console_handler)
 
     return logger
+
+def cleanup_logger(logger = None):
+
+    # Retrieve the root logger if not specified.
+    if logger is None:
+        logger = logging.getLogger()
+
+    for handler in logger.handlers[:]:
+        try:
+            if hasattr(handler, 'acquire') and hasattr(handler, 'release'):
+                handler.acquire()
+            try:
+                handler.flush()  # Ensure all data is written to the file
+                handler.close()  # Close the handler
+            except (IOError, OSError) as e:
+                logger.error(f"Error while flushing or closing handler {handler}: {e}", exc_info=True)
+            finally:
+                if hasattr(handler, 'release'):
+                    handler.release()
+                logger.removeHandler(handler)
+        except Exception as e:
+            logger.error(f"Unexpected error during handler cleanup: {e}", exc_info=True)
